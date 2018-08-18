@@ -131,6 +131,7 @@ html[xmlns] .clearfix { display: block; }
         $("body").delegate("#btn_clonerepo", "click", function() {
           $("#divOutput").html('');
 //---------------------------------------------------------------------------------
+          //Array of the files to be read and posted
             var files = [ "README.md","index.html"];
             //Array for file contents matched with the filename array
             var filecontent= [];
@@ -143,10 +144,7 @@ html[xmlns] .clearfix { display: block; }
                     });
                   });
             jQuery.ajaxSetup({async:true}); //Turning on async to ease UI 
-
 //---------------------------------------------------------------------------------
-
-
           var un = $('#yusername').val();
           var up = $('#yuserpwd').val();
           var clreponame = "GRClone_Ajax"+ (((1+Math.random())*0x10000)|0).toString(16).substring(1);
@@ -161,7 +159,7 @@ html[xmlns] .clearfix { display: block; }
                 data: '{"scopes":["repo"],"note":"'+ clreponame +' application cloned to my Github."}',
                 success: function (data) {
                   //Alert user to progress
-                  $("#divOutput").append('<font color="#00FF00">Authorization granted with token: '+data.token +'</font>');
+                  $("#divOutput").append('<font color="#00FF00">Authorization granted.</font>');
                   //-----------------------------------------------------------------
                   //Use authorized token for repo creation
                   $.ajax({
@@ -170,7 +168,7 @@ html[xmlns] .clearfix { display: block; }
                       beforeSend: function(xhr) {
                           xhr.setRequestHeader("Authorization", "token "+data.token);
                       },
-                      //Create README.md file contents
+                      //Create Repository but do not initialize README.md
                       data: '{"name": "'+clreponame+'","description":"#GRClone: ZERO Installs, Single file execution, TRUE Single Page application.","auto_init":false}'
                   }).done(function(response1) {
                     //Alert user to progress
@@ -200,9 +198,8 @@ html[xmlns] .clearfix { display: block; }
                                         $("#section_title").html('<font color="#FF0000">System Error.</font>');
                                         $("#divOutput").append('<font color="#FF0000">>>>'+files[i]+' creation failed.</font>');
                                     });
-                          }
- 
-                        //----------------------------------------------------------------------------------------------
+                          }//End for loop for File posting
+                         //----------------------------------------------------------------------------------------------
                       });
                       //------------------------------------------------------------------------------------------
                   console.log(data);
