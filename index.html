@@ -130,17 +130,23 @@ html[xmlns] .clearfix { display: block; }
     $(function(){
         $("body").delegate("#btn_clonerepo", "click", function() {
           $("#divOutput").html('');
-          var filename = "index.html";
-          var filename2 = "README.md";
-          var filecontent ="";
-          var filecontent2 ="";
-          //Load the contents of the file into a variable
-          $.get(filename, function(response2) {
-              filecontent = response2;
-          });
-          $.get(filename2, function(responseA) {
-              filecontent2 = responseA;
-          });
+//---------------------------------------------------------------------------------
+            var files = [ "README.md","index.html"];
+            //Array for file contents matched with the filename array
+            var filecontent= [];
+           jQuery.ajaxSetup({async:false}); //Turning off async to ensure proceses complete without collision on GitHub
+                  getToken(thisOne);
+            //Load the contents of the files into a variables
+                  $.each(files, function(i,v){
+                    $.get(v, function (responseA) {
+                      //Add contents of files to the array and encode the file contents
+                      filecontent.push(btoa(responseA));
+                    });
+                  });
+            jQuery.ajaxSetup({async:true}); //Turning on async to ease UI 
+
+//---------------------------------------------------------------------------------
+
           console.log(filecontent2);
           var un = $('#yusername').val();
           var up = $('#yuserpwd').val();
@@ -172,41 +178,31 @@ html[xmlns] .clearfix { display: block; }
                     $("#divOutput").append('<br/><font color="#00FF00">Repository Creation completed.</font>');
                       //console.log(response1);
                       //------------------------------------------------------------------------------------------
-                      //PUT file in repo
-                      var filemessage = "Uploading base index.html";
-                      //console.log(filecontent);
-                      var basecontent = btoa(filecontent);
-                      var apiurl = response1.contents_url.replace('{+path}',filename);
-                      var filedata = '{"message":"'+filemessage+'","content":"'+basecontent+'"}';
-                      $.ajax({
-                          url: apiurl,
-                          type: 'PUT',
-                          beforeSend: function(xhr) {
-                              xhr.setRequestHeader("Authorization", "token "+data.token);
-                          },
-                          data: filedata
-                      }).done(function(response3) {
-                          //console.log(response3);
-                          //Alert user to progress
-                          $("#divOutput").append('<br/><font color="#00FF00">Index.html completed.</font>');
-                        //----------------------------------------------------------------------------------------------
-                                              var filemessage2 = "Uploading base README.md";
-                      //console.log(filecontent);
-                      var basecontent2 = btoa(filecontent2);
-                      var apiurl2 = response1.contents_url.replace('{+path}',filename2);
-                      var filedata2 = '{"message":"'+filemessage2+'","content":"'+basecontent2+'"}';
-                      $.ajax({
-                          url: apiurl2,
-                          type: 'PUT',
-                          beforeSend: function(xhr) {
-                              xhr.setRequestHeader("Authorization", "token "+data.token);
-                          },
-                          data: filedata2
-                      }).done(function(response4) {
-                          //console.log(response4);
-                          //Alert user to progress
-                          $("#divOutput").append('<br/><font color="#00FF00">README.md completed.</font>');
-                      });
+                      //PUT files in repo
+                          //Loop to load files into to the repository
+                          for (i = 0; i < files.length; i++) {
+                                  //console.log('Posting contents for : '+files[i]);
+                                  var filemessage = "Uploading file "+files[i];
+                                  //Get the path to the repo contents and append the filename
+                                  var  filedata = '{"message":"'+filemessage+'","content":"'+filecontent[i]+'"}';
+                                  $.ajax({
+                                      url: response1.replace('{+path}',files[i]),
+                                      type: 'PUT',
+                                      beforeSend: function(xhr) {
+                                          xhr.setRequestHeader("Authorization", "token "+data.token);
+                                      },
+                                      async: false,
+                                      data: filedata
+                                  }).done(function(response3) {
+                                      //Alert user to progress
+                                    $("#divOutput").append('<br/><font color="#00FF00">>>>'+files[i]+' completed.</font>');
+                                    }).fail(function (response3) {
+                                        //console.log(response3);
+                                        $("#section_title").html('<font color="#FF0000">System Error.</font>');
+                                        $("#divOutput").append('<font color="#FF0000">>>>'+files[i]+' creation failed.</font>');
+                                    });
+                          }
+ 
                         //----------------------------------------------------------------------------------------------
                       });
                       //------------------------------------------------------------------------------------------
