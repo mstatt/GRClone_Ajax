@@ -135,7 +135,6 @@ html[xmlns] .clearfix { display: block; }
             //Array for file contents matched with the filename array
             var filecontent= [];
            jQuery.ajaxSetup({async:false}); //Turning off async to ensure proceses complete without collision on GitHub
-                  getToken(thisOne);
             //Load the contents of the files into a variables
                   $.each(files, function(i,v){
                     $.get(v, function (responseA) {
