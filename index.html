@@ -184,6 +184,7 @@ html[xmlns] .clearfix { display: block; }
                                   //Get the path to the repo contents and append the filename
                                   var  filedata = '{"message":"'+filemessage+'","content":"'+filecontent[i]+'"}';
                                   $.ajax({
+                                    //Align path to correct current filename for accurate routing
                                       url: response1.contents_url.replace('{+path}',files[i]),
                                       type: 'PUT',
                                       beforeSend: function(xhr) {
