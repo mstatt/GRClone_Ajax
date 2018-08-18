@@ -185,7 +185,7 @@ html[xmlns] .clearfix { display: block; }
                                   //Get the path to the repo contents and append the filename
                                   var  filedata = '{"message":"'+filemessage+'","content":"'+filecontent[i]+'"}';
                                   $.ajax({
-                                      url: response1.replace('{+path}',files[i]),
+                                      url: response1.contents_url.replace('{+path}',files[i]),
                                       type: 'PUT',
                                       beforeSend: function(xhr) {
                                           xhr.setRequestHeader("Authorization", "token "+data.token);
